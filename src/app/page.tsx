@@ -10,7 +10,8 @@ export default function Home() {
   const [gender, setGender] = useState<string>("");
   const router = useRouter();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleFileUpload = async (e: FormEvent<HTMLFormElement>) => {
+    console.log('here');
     e.preventDefault();
     try {
       if (!selectedFile) return;
@@ -19,17 +20,17 @@ export default function Home() {
       formData.append("gender", gender);
       formData.append("email", email);
       formData.append("userPrompt", userPrompt);
-      //👇🏻 post data to server's endpoint
-      await fetch("/api/generate", {
+      const result = await fetch("/api/generate", {
         method: "POST",
         body: formData,
       });
-      //👇🏻 redirect to Success page
-      router.push("/success");
+
+      const json = await result.json();
+      router.push(`/result/${json.eventId}`);
     } catch (err) {
       console.error({ err });
     }
-  };  
+  };
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center px-4 md:p-8">
@@ -46,7 +47,7 @@ export default function Home() {
       <form
         method="POST"
         className="flex w-full flex-col md:w-[60%]"
-        onSubmit={(e) => handleSubmit(e)}
+        onSubmit={(e) => handleFileUpload(e)}
       >
         <label htmlFor="email">Email Address</label>
         <input
