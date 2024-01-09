@@ -1,3 +1,4 @@
+import { client } from "@/trigger";
 import formidable from "formidable";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Writable } from "stream";
@@ -33,7 +34,6 @@ const fileConsumer = (acc: any) => {
 const readFile = (req: NextApiRequest, saveLocally?: boolean) => {
   // @ts-ignore
   const chunks: any[] = [];
-  //👇🏻 creates a formidable instance that uses the fileConsumer function
   const form = formidable({
     keepExtensions: true,
     fileWriteStreamHandler: () => fileConsumer(chunks),
@@ -43,12 +43,24 @@ const readFile = (req: NextApiRequest, saveLocally?: boolean) => {
     form.parse(req, (err, fields: any, files: any) => {
       //👇🏻 converts the image to base64
       const image = Buffer.concat(chunks).toString("base64");
+
       //👇🏻 logs the result
       console.log({
         image,
         email: fields.email[0],
         gender: fields.gender[0],
         userPrompt: fields.userPrompt[0],
+      });
+
+      //👇🏻 sends the payload to the job
+      client.sendEvent({
+        name: "generate.avatar",
+        payload: {
+          image,
+          email: fields.email[0],
+          gender: fields.gender[0],
+          userPrompt: fields.userPrompt[0],
+        },
       });
 
       if (err) reject(err);
