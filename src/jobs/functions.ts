@@ -1,12 +1,18 @@
 import { eventTrigger } from "@trigger.dev/sdk";
 import { client } from "@/trigger";
 import { Replicate } from "@trigger.dev/replicate";
+import { Resend } from "@trigger.dev/resend";
 import { z } from "zod";
 
 const replicate = new Replicate({
   id: "replicate",
   // @ts-ignore
   apiKey: process.env.REPLICATE_API_TOKEN,
+});
+
+const resend = new Resend({
+  id: "resend",
+  apiKey: process.env.RESEND_API_KEY!,
 });
 
 //👇🏻 converts an image URL to a data URI
@@ -23,8 +29,8 @@ const urlToBase64 = async (image: string) => {
 client.defineJob({
   id: "generate-avatar",
   name: "Generate Avatar",
-  //👇🏻 integrates Replicate
-  integrations: { replicate },
+  //👇🏻 integrates Replicate & Resend
+  integrations: { replicate, resend },
   version: "0.0.1",
   trigger: eventTrigger({
     name: "generate.avatar",
@@ -64,5 +70,17 @@ client.defineJob({
 
 		await io.logger.info("Swapped image: ", {swappedImage.output});
 		await io.logger.info("✨ Congratulations, your image has been swapped! ✨");
+
+    //👇🏻 -- Sends the swapped image to the user--
+    await io.resend.sendEmail("send-email", {
+      from: "onboarding@resend.dev",
+      to: [email],
+      subject: "Your avatar is ready! 🌟🤩",
+      text: `Hi! \n View and download your avatar here - ${swappedImage.output}`,
+    });
+
+    await io.logger.info(
+      "✨ Congratulations, the image has been delivered! ✨"
+    );
 	},
 });

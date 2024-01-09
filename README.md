@@ -1,10 +1,13 @@
 # AI Image Generator
-A web application that allows users to generate AI images of themselves based on the prompt provided and sends the images out via. email.
-This application is using APIs by [Replicate](https://replicate.com/) for AI image generation and face-swapping functionality.
-This application is using APIs by [Resend](https://resend.com/) for email functionality.
-This applicating is using APIs by [Trigger.dev](https://trigger.dev/) as an orchestration layer.
+A web application that allows users to generate AI images of themselves based on the prompt provided and sends the images out via. email.\
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Functionality
+- Upload images to a local directory in [Next.js](https://nextjs.org/)
+- Create and manage long-running jobs with [Trigger.dev](https://trigger.dev/)
+- Generate AI images using various models on [Replicate](https://replicate.com/)
+- Send emails via [Resend](https://resend.com/) in [Trigger.dev](https://trigger.dev/)
 
 ## Run Application
 ```bash
