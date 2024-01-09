@@ -1,4 +1,4 @@
-import { client } from "@/trigger";
+import { client } from "@/app/trigger";
 import formidable from "formidable";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Writable } from "stream";

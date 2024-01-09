@@ -1,5 +1,5 @@
 import { eventTrigger } from "@trigger.dev/sdk";
-import { client } from "@/trigger";
+import { client } from "@/app/trigger";
 import { Replicate } from "@trigger.dev/replicate";
 import { Resend } from "@trigger.dev/resend";
 import { z } from "zod";
@@ -68,7 +68,7 @@ client.defineJob({
       },
     });
 
-		await io.logger.info("Swapped image: ", {swappedImage.output});
+		await io.logger.info("Swapped image: ", swappedImage.output);
 		await io.logger.info("✨ Congratulations, your image has been swapped! ✨");
 
     //👇🏻 -- Sends the swapped image to the user--

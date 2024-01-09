@@ -11,9 +11,11 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Run Application
 ```bash
+# Start Next.js App
 npm run dev
-# or
-bun dev
+
+# Establish a tunnel between Trigger.dev and the Next.js App.
+npx @trigger.dev/cli@latest dev
 ```
 
 ## Technology
