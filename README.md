@@ -23,7 +23,6 @@ npx @trigger.dev/cli@latest dev
 - [Trigger.dev](https://trigger.dev/) - a web platform that offers three communication methods: webhook, schedule, and event.
 - [Replicate](https://replicate.com/) - a web platform that allows users to run models at scale in the cloud.
 - [Resend](https://resend.com/) - an email API that enables you to send texts, attachments, and email templates easily.
-- [Formidable](https://www.npmjs.com/package/formidable) - a library for parsing form data, especially file uploads.
 - [Zod](https://zod.dev/) - a TypeScript-first type-checking and validation library that enables you to verify the data type of a job's payload.
 
 ## Resources

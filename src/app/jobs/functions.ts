@@ -46,9 +46,10 @@ client.defineJob({
 
     await io.logger.info("Avatar generation started!", { image });
 
+    //👇🏻 trigger image generation via. Replicate's Stability AI Model
     const imageGenerated = await io.replicate.run("create-model", {
       // @ts-ignore
-      identifier: process.env.STABILITY_AI_URI || '',
+      identifier: process.env.STABILITY_AI_URI,
       input: {
         prompt: `${
           userPrompt
@@ -58,6 +59,15 @@ client.defineJob({
       },
     });
 
+    if (imageGenerated.output === undefined || imageGenerated.error !== null) {
+      if (imageGenerated.error !== null) {
+        throw new Error(JSON.stringify(imageGenerated.error));
+      }
+      throw new Error("Character generation failed");
+    }
+
+
+    //👇🏻 trigger image generation via. Replicate's Face-Swap AI Model
     const swappedImage = await io.replicate.run("create-image", {
       // @ts-ignore
       identifier: process.env.FACESWAP_AI_URL,
@@ -68,11 +78,19 @@ client.defineJob({
       },
     });
 
+    if (swappedImage.output === undefined || swappedImage.error !== null) {
+      if (swappedImage.error !== null) {
+        throw new Error(JSON.stringify(swappedImage.error));
+      }
+      throw new Error("Character generation failed");
+    }
+
 		await io.logger.info("Swapped image: ", swappedImage.output);
 		await io.logger.info("✨ Congratulations, your image has been swapped! ✨");
 
-    //👇🏻 -- Sends the swapped image to the user--
-    await io.resend.sendEmail("send-email", {
+
+    //👇🏻 -- Sends the swapped image to the user
+    await io.resend.emails.send("send-email", {
       from: "onboarding@resend.dev",
       to: [email],
       subject: "Your avatar is ready! 🌟🤩",
