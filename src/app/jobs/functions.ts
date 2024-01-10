@@ -78,10 +78,10 @@ client.defineJob({
     //👇🏻 sends the swapped image to the user
     await io.logger.info("Resend - Send Email - Process started!");
     await io.resend.emails.send("send-email", {
-      from: "onboarding@resend.dev",
+      from: "faceswap-avatar@resend.dev",
       to: [email],
       subject: "Your avatar is ready! 🌟🤩",
-      text: `Hi! \n View and download your avatar here - ${swappedImage.output}`,
+      text: `Hi! \n\nView and download your avatar here - ${swappedImage.output}`,
     });
     await io.logger.info("Resend - Send Email - Process completed!");
 

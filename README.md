@@ -52,4 +52,5 @@ npx @trigger.dev/cli@latest dev
 
 ## Resources
 - [Tutorial](https://trigger.dev/blog/turn-your-face-into-a-super-hero) - a tutorial for building this application.
+- [Tutorial Live Demo](https://avatar-generator-psi.vercel.app) - a hosted version of the application.
 - [Lexica](https://lexica.art) - a good resource for finding image generation prompts.
