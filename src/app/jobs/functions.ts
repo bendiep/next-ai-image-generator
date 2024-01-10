@@ -47,6 +47,7 @@ client.defineJob({
     await io.logger.info("Avatar generation started!", { image });
 
     //👇🏻 trigger image generation via. Replicate's Stability AI Model
+    await io.logger.info("Replicate - Stability AI Model - Process started!");
     const imageGenerated = await io.replicate.run("create-model", {
       // @ts-ignore
       identifier: process.env.STABILITY_AI_URI,
@@ -58,44 +59,49 @@ client.defineJob({
         }`,
       },
     });
-
     if (imageGenerated.output === undefined || imageGenerated.error !== null) {
       if (imageGenerated.error !== null) {
         throw new Error(JSON.stringify(imageGenerated.error));
       }
       throw new Error("Character generation failed");
     }
+    console.log("Replicate - Stability AI Model - Image URL: ", imageGenerated.output[0]);
+    await io.logger.info("Replicate - Stability AI Model - Process completed!");
 
 
     //👇🏻 trigger image generation via. Replicate's Face-Swap AI Model
+    await io.logger.info("Replicate - Face-Swap AI Model - Process started!");
     const swappedImage = await io.replicate.run("create-image", {
       // @ts-ignore
       identifier: process.env.FACESWAP_AI_URL,
       input: {
         // @ts-ignore
-        target_image: await urlToBase64(imageGenerated.output),
-        swap_image: "data:image/png;base64," + image,
+        target_image: await urlToBase64(imageGenerated.output[0]),
+        swap_image: image,
       },
     });
-
     if (swappedImage.output === undefined || swappedImage.error !== null) {
       if (swappedImage.error !== null) {
         throw new Error(JSON.stringify(swappedImage.error));
       }
       throw new Error("Character generation failed");
     }
+    await io.logger.info("Replicate - Face-Swap AI Model - Process completed!");
+
 
 		await io.logger.info("Swapped image: ", swappedImage.output);
 		await io.logger.info("✨ Congratulations, your image has been swapped! ✨");
 
 
-    //👇🏻 -- Sends the swapped image to the user
-    await io.resend.emails.send("send-email", {
-      from: "onboarding@resend.dev",
-      to: [email],
-      subject: "Your avatar is ready! 🌟🤩",
-      text: `Hi! \n View and download your avatar here - ${swappedImage.output}`,
-    });
+    //👇🏻 sends the swapped image to the user
+    await io.logger.info("Resend - Send Email - Process started!");
+    // await io.resend.emails.send("send-email", {
+    //   from: "onboarding@resend.dev",
+    //   to: [email],
+    //   subject: "Your avatar is ready! 🌟🤩",
+    //   text: `Hi! \n View and download your avatar here - ${swappedImage.output}`,
+    // });
+    await io.logger.info("Resend - Send Email - Process completed!");
 
     await io.logger.info(
       "✨ Congratulations, the image has been delivered! ✨"
