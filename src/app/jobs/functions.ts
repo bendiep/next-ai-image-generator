@@ -64,7 +64,6 @@ client.defineJob({
     //👇🏻 trigger image generation via. Replicate's Face-Swap AI Model
     await io.logger.info("Replicate - Face-Swap AI Model - Process started!");
     const imageGeneratedBase64 = await urlToBase64(imageGenerated.output);
-    console.log(imageGeneratedBase64);
     const swappedImage = await io.replicate.run("create-image", {
       // @ts-ignore
       identifier: process.env.FACESWAP_AI_URI,
