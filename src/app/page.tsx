@@ -10,23 +10,43 @@ export default function Home() {
   const [gender, setGender] = useState<string>("");
   const router = useRouter();
 
+  const fileToBase64 = (file: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // Ensure the result is a string before resolving
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          reject(new Error('FileReader result is not a string'));
+        }
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleFileUpload = async (e: FormEvent<HTMLFormElement>) => {
-    console.log('here');
     e.preventDefault();
     try {
       if (!selectedFile) return;
+
+      //👇🏻 converts the image file to base64 string
+      const base64File = await fileToBase64(selectedFile);
       const formData = new FormData();
-      formData.append("image", selectedFile);
+      formData.append("image", base64File);
       formData.append("gender", gender);
       formData.append("email", email);
       formData.append("userPrompt", userPrompt);
-      const result = await fetch("/api/generate", {
+
+      //👇🏻 post data to server's endpoint
+      await fetch("/api/generate", {
         method: "POST",
         body: formData,
       });
 
-      const json = await result.json();
-      router.push(`/result/${json.eventId}`);
+      //👇🏻 redirect to Success page
+      router.push("/success");
     } catch (err) {
       console.error({ err });
     }
