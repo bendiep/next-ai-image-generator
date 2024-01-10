@@ -30,14 +30,17 @@ export async function POST(req: NextRequest) {
 
     // send event to Trigger.dev
     await client.sendEvent({
-      name: "generate-avatar",
+      name: "generate.avatar",
       payload: result,
     });
+    console.log("Processing!");
     return NextResponse.json({ message: "Processing!" }, { status: 200 });
   } catch (e) {
     if (e instanceof Error) {
+      console.log("Error: ", e.message);
       return NextResponse.json({ message: e.message }, { status: 500 });
     }
+    console.log("Error: Unknown");
     return NextResponse.json({ message: "Unknown error" }, { status: 500 });
   }
 }
