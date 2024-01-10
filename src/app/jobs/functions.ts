@@ -42,7 +42,7 @@ client.defineJob({
     }),
   }),
   run: async (payload, io, ctx) => {
-    const { email, image, gender, userPrompt } = payload;
+    const { image, email, gender, userPrompt } = payload;
 
     await io.logger.info("Avatar generation started!", { image });
 
@@ -70,13 +70,12 @@ client.defineJob({
 
 
     //👇🏻 trigger image generation via. Replicate's Face-Swap AI Model
-    await io.logger.info("Replicate - Face-Swap AI Model - Process started!");
+    await io.logger.info("Replicate - Face-Swap AI Model - Process started!", { imageGenerated });
     const swappedImage = await io.replicate.run("create-image", {
       // @ts-ignore
-      identifier: process.env.FACESWAP_AI_URL,
+      identifier: process.env.FACESWAP_AI_URI,
       input: {
-        // @ts-ignore
-        target_image: await urlToBase64(imageGenerated.output[0]),
+        target_image: await urlToBase64(imageGenerated.output),
         swap_image: image,
       },
     });
@@ -86,6 +85,7 @@ client.defineJob({
       }
       throw new Error("Character generation failed");
     }
+    console.log("Replicate - Face-Swap AI Model - Image URL: ", swappedImage.output);
     await io.logger.info("Replicate - Face-Swap AI Model - Process completed!");
 
 
@@ -95,12 +95,12 @@ client.defineJob({
 
     //👇🏻 sends the swapped image to the user
     await io.logger.info("Resend - Send Email - Process started!");
-    // await io.resend.emails.send("send-email", {
-    //   from: "onboarding@resend.dev",
-    //   to: [email],
-    //   subject: "Your avatar is ready! 🌟🤩",
-    //   text: `Hi! \n View and download your avatar here - ${swappedImage.output}`,
-    // });
+    await io.resend.emails.send("send-email", {
+      from: "onboarding@resend.dev",
+      to: [email],
+      subject: "Your avatar is ready! 🌟🤩",
+      text: `Hi! \n View and download your avatar here - ${swappedImage.output}`,
+    });
     await io.logger.info("Resend - Send Email - Process completed!");
 
     await io.logger.info(
