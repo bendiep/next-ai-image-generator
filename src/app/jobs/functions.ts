@@ -26,6 +26,7 @@ const urlToBase64 = async (image: string) => {
   return dataURI;
 };
 
+//👇🏻 Trigger.dev Job Definition
 client.defineJob({
   id: "generate-avatar",
   name: "Generate Avatar",
@@ -44,8 +45,6 @@ client.defineJob({
   run: async (payload, io, ctx) => {
     const { image, email, gender, userPrompt } = payload;
 
-    await io.logger.info("Avatar generation started!", { image });
-
     //👇🏻 trigger image generation via. Replicate's Stability AI Model
     await io.logger.info("Replicate - Stability AI Model - Process started!");
     const imageGenerated = await io.replicate.run("create-model", {
@@ -59,39 +58,23 @@ client.defineJob({
         }`,
       },
     });
-    if (imageGenerated.output === undefined || imageGenerated.error !== null) {
-      if (imageGenerated.error !== null) {
-        throw new Error(JSON.stringify(imageGenerated.error));
-      }
-      throw new Error("Character generation failed");
-    }
     console.log("Replicate - Stability AI Model - Image URL: ", imageGenerated.output[0]);
     await io.logger.info("Replicate - Stability AI Model - Process completed!");
 
-
     //👇🏻 trigger image generation via. Replicate's Face-Swap AI Model
-    await io.logger.info("Replicate - Face-Swap AI Model - Process started!", { imageGenerated });
+    await io.logger.info("Replicate - Face-Swap AI Model - Process started!");
+    const imageGeneratedBase64 = await urlToBase64(imageGenerated.output);
+    console.log(imageGeneratedBase64);
     const swappedImage = await io.replicate.run("create-image", {
       // @ts-ignore
       identifier: process.env.FACESWAP_AI_URI,
       input: {
-        target_image: await urlToBase64(imageGenerated.output),
+        target_image: imageGeneratedBase64,
         swap_image: image,
       },
     });
-    if (swappedImage.output === undefined || swappedImage.error !== null) {
-      if (swappedImage.error !== null) {
-        throw new Error(JSON.stringify(swappedImage.error));
-      }
-      throw new Error("Character generation failed");
-    }
     console.log("Replicate - Face-Swap AI Model - Image URL: ", swappedImage.output);
     await io.logger.info("Replicate - Face-Swap AI Model - Process completed!");
-
-
-		await io.logger.info("Swapped image: ", swappedImage.output);
-		await io.logger.info("✨ Congratulations, your image has been swapped! ✨");
-
 
     //👇🏻 sends the swapped image to the user
     await io.logger.info("Resend - Send Email - Process started!");
@@ -103,8 +86,8 @@ client.defineJob({
     });
     await io.logger.info("Resend - Send Email - Process completed!");
 
-    await io.logger.info(
-      "✨ Congratulations, the image has been delivered! ✨"
-    );
+    return {
+      image: swappedImage.output,
+    };
 	},
 });
