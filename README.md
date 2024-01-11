@@ -1,5 +1,5 @@
 # AI Image Generator
-A web application that allows users to generate AI images of themselves based on the prompt provided and sends the images out via. email.\
+A web application that allows users to generate AI images of themselves based on the prompt provided and sends the images out via. email.
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
